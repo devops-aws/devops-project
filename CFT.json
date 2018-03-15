@@ -1,0 +1,78 @@
+{
+"Description": "AWS Template for creating VPC, Subnet, Route Table & IGW ",
+"Parameters": {
+
+},
+"Resources": {
+  "MyVPC1": {
+    "Type": "AWS::EC2::VPC",
+    "Properties": {
+      "EnableDnsSupport": "true",
+      "EnableDnsHostnames": "true",
+      "CidrBlock": "10.0.0.0/16"
+    }
+
+  },
+  "PublicSubnet": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+      "CidrBlock": "10.0.0.0/24",
+      "VpcId": {
+        "Ref": "MyVPC1"
+      }
+    }
+
+  },
+  "InternetGateway": {
+    "Type": "AWS::EC2::InternetGateway"
+
+  },
+  "VPCGatewayAttachment": {
+    "Type": "AWS::EC2::VPCGatewayAttachment",
+    "Properties": {
+      "VpcId": {
+        "Ref": "MyVPC1"
+      },
+      "InternetGatewayId": {
+        "Ref": "InternetGateway"
+      }
+    }
+
+  },
+  "PublicRouteTable": {
+    "Type": "AWS::EC2::RouteTable",
+    "Properties": {
+      "VpcId": {
+        "Ref": "MyVPC1"
+      }
+    }
+
+  },
+  "PublicRoute": {
+    "Type": "AWS::EC2::Route",
+    "DependsOn": "VPCGatewayAttachment",
+    "Properties": {
+      "RouteTableId": {
+        "Ref": "PublicRouteTable"
+      },
+      "DestinationCidrBlock": "0.0.0.0/0",
+      "GatewayId": {
+        "Ref": "InternetGateway"
+      }
+    }
+
+  },
+  "PublicSubnetRouteTableAssociation": {
+    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    "Properties": {
+      "SubnetId": {
+        "Ref": "PublicSubnet"
+      },
+      "RouteTableId": {
+        "Ref": "PublicRouteTable"
+      }
+    }
+
+}
+}
+}
